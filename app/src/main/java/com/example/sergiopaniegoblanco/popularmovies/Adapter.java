@@ -22,8 +22,10 @@ import static android.content.ContentValues.TAG;
 public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
     private int mNumberItems;
     Context context;
-    public Adapter(int numberOfItems) {
+    int screenWidth;
+    public Adapter(int numberOfItems,int screenWidth) {
         mNumberItems = numberOfItems;
+        this.screenWidth=screenWidth;
     }
 
     @Override
@@ -42,7 +44,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
     @Override
     public void onBindViewHolder(PosterViewHolder holder, int position) {
         Log.d(TAG, "#" + position);
-        Picasso.with(context).load("http://i.imgur.com/DvpvklR.png").error(R.drawable.fff)
+        Picasso.with(context).load("http://i.imgur.com/DvpvklR.png").error(R.drawable.fff).resize(screenWidth/2, 0)
                 .into(holder.listItemNumberView);
     }
 
