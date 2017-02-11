@@ -3,6 +3,7 @@ package com.example.sergiopaniegoblanco.popularmovies;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.provider.Settings;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +13,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import static android.content.ContentValues.TAG;
 
@@ -23,9 +28,15 @@ public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
     private int mNumberItems;
     Context context;
     int screenWidth;
-    public Adapter(int numberOfItems,int screenWidth) {
+    JSONObject json;
+    public Adapter(int numberOfItems,int screenWidth,JSONObject json) {
         mNumberItems = numberOfItems;
         this.screenWidth=screenWidth;
+        this.json=json;
+    }
+
+    public void setJson(JSONObject json) {
+        this.json = json;
     }
 
     @Override
@@ -44,8 +55,21 @@ public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
     @Override
     public void onBindViewHolder(PosterViewHolder holder, int position) {
         Log.d(TAG, "#" + position);
-        Picasso.with(context).load("http://i.imgur.com/DvpvklR.png").error(R.drawable.fff).resize(screenWidth/2, 0)
-                .into(holder.listItemNumberView);
+        JSONArray jArray;
+        String image="";
+        try {
+            jArray = json.getJSONArray("results");
+            System.out.println(jArray.getJSONObject(position).get("poster_path").toString());
+            image=jArray.getJSONObject(position).get("poster_path").toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }catch (NullPointerException ex){
+        }
+        if(!image.equals(""))
+            Picasso.with(context).load("http://image.tmdb.org/t/p/w185/"+image).error(R.drawable.fff).resize(screenWidth/2, 0).into(holder.listItemNumberView);
+        else{
+
+        }
     }
 
     @Override
