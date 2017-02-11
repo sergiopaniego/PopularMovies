@@ -29,10 +29,15 @@ public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
     Context context;
     int screenWidth;
     JSONObject json;
-    public Adapter(int numberOfItems,int screenWidth,JSONObject json) {
+    final private ListItemClickListener mOnClickListener;
+    private static int viewHolderCount;
+
+    public Adapter(int numberOfItems,int screenWidth,JSONObject json,ListItemClickListener mOnClickListener) {
         mNumberItems = numberOfItems;
         this.screenWidth=screenWidth;
+        this.mOnClickListener=mOnClickListener;
         this.json=json;
+        viewHolderCount = 0;
     }
 
     public void setJson(JSONObject json) {
@@ -48,7 +53,9 @@ public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
 
         View view = inflater.inflate(layoutIdForListItem, parent, shouldAttachToParentImmediately);
         PosterViewHolder viewHolder = new PosterViewHolder(view);
-
+        viewHolderCount++;
+        Log.d(TAG, "onCreateViewHolder: number of ViewHolders created: "
+                + viewHolderCount);
         return viewHolder;
     }
 
@@ -71,6 +78,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
         }
     }
 
+
     @Override
     public int getItemCount() {
         return mNumberItems;
@@ -80,7 +88,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
     /**
      * Cache of the children views for a list item.
      */
-    class PosterViewHolder extends RecyclerView.ViewHolder {
+    class PosterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         // Will display the position in the list, ie 0 through getItemCount() - 1
         ImageView listItemNumberView;
@@ -96,6 +104,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
             super(itemView);
 
             listItemNumberView = (ImageView) itemView.findViewById(R.id.poster_item);
+            itemView.setOnClickListener(this);
         }
 
         /**
@@ -106,5 +115,18 @@ public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
         void bind(Drawable listIndex) {
             listItemNumberView.setImageDrawable(listIndex);
         }
+        @Override
+        public void onClick(View view) {
+            int clickedPosition=getAdapterPosition();
+            mOnClickListener.onListItemClick(clickedPosition);
+            System.out.println("CLICKED");
+        }
     }
+
+    interface ListItemClickListener{
+
+        void onListItemClick(int clickedPosition);
+
+    }
+
 }

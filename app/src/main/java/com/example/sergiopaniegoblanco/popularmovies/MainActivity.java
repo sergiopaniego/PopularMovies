@@ -1,6 +1,7 @@
 package com.example.sergiopaniegoblanco.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -17,13 +18,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Adapter.ListItemClickListener{
     private RecyclerView mNumbersList;
     private static final int NUM_LIST_ITEMS=20;
     private Adapter mAdapter;
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView images;
     JSONObject json;
     int width;
+    int clickedPosition;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,6 +103,30 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+    Toast mToast;
+    @Override
+    public void onListItemClick(int clickedPosition) {
+        if(mToast!=null){
+            mToast.cancel();
+        }
+        this.clickedPosition=clickedPosition;
+        String toastMessage="Item #"+clickedPosition+" clicked";
+        mToast=Toast.makeText(this,toastMessage,Toast.LENGTH_SHORT);
+        mToast.show();
+        Context context = MainActivity.this;
+        Class destinationActivity = DetailActivity.class;
+        Intent startChildActivityIntent = new Intent(context, destinationActivity);
+        try {
+            JSONArray jArray = json.getJSONArray("results");
+            //String image=jArray.getJSONObject(clickedPosition).get("poster_path").toString();
+            //System.out.println(Integer.parseInt(json.get("page").toString()));
+            System.out.println(clickedPosition);
+            startChildActivityIntent.putExtra(Intent.EXTRA_TEXT,jArray.getJSONObject(clickedPosition).toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        startActivity(startChildActivityIntent);
+    }
 
 
     public class MoviesQueryTask extends AsyncTask<URL, Void, String> {
@@ -118,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 SearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
                 json= new JSONObject(SearchResults);
-                System.out.println(json.get("page"));
+                //System.out.println(json.get("page"));
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
@@ -131,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String githubSearchResults) {
             mLoadingIndicator.setVisibility(View.INVISIBLE);
-            mAdapter = new Adapter(NUM_LIST_ITEMS,width,json);
+            mAdapter = new Adapter(NUM_LIST_ITEMS,width,json,MainActivity.this);
             mNumbersList.setAdapter(mAdapter);
             if (githubSearchResults != null && !githubSearchResults.equals("")) {
                // showJsonDataView();

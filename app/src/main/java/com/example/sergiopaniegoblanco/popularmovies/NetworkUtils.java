@@ -1,7 +1,6 @@
 package com.example.sergiopaniegoblanco.popularmovies;
 
 import android.net.Uri;
-import android.provider.Settings;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,10 +16,9 @@ import java.util.Scanner;
 public class NetworkUtils {
     final static String URL_BASE="http://api.themoviedb.org/3/movie/";
     final static String PARAM_QUERY = "api_key";
-    /*
-     *Insert your key below and uncomment it to run the project
-     *final static String key="";
-     *
+    /*Here goes the API key
+    final static String key="";
+
      */
     /**
      * Builds the URL used to query The Movie DB.
