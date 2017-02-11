@@ -16,10 +16,8 @@ import java.util.Scanner;
 public class NetworkUtils {
     final static String URL_BASE="http://api.themoviedb.org/3/movie/";
     final static String PARAM_QUERY = "api_key";
-    /*Here goes the API key
+    //Here goes the API key
     final static String key="";
-
-     */
     /**
      * Builds the URL used to query The Movie DB.
      *
