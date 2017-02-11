@@ -1,6 +1,7 @@
 package com.example.sergiopaniegoblanco.popularmovies;
 
 import android.net.Uri;
+import android.provider.Settings;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,14 +15,21 @@ import java.util.Scanner;
  */
 
 public class NetworkUtils {
-    /**
-     * Builds the URL used to query GitHub.
+    final static String URL_BASE="http://api.themoviedb.org/3/movie/";
+    final static String PARAM_QUERY = "api_key";
+    /*
+     *Insert your key below and uncomment it to run the project
+     *final static String key="";
      *
-     * @param githubSearchQuery The keyword that will be queried for.
-     * @return The URL to use to query the GitHub.
      */
-    public static URL buildUrl(String githubSearchQuery) {
-        Uri builtUri = Uri.parse(githubSearchQuery).buildUpon()
+    /**
+     * Builds the URL used to query The Movie DB.
+     *
+     * @param option The keyword that will be queried for.
+     * @return The URL to use to query The Movie DB.
+     */
+    public static URL buildUrl(String option) {
+        Uri builtUri = Uri.parse(URL_BASE).buildUpon().appendPath(option).appendQueryParameter(PARAM_QUERY,key)
                 .build();
 
         URL url = null;

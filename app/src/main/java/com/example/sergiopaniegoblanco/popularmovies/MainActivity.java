@@ -58,9 +58,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         mLoadingIndicator=(ProgressBar)findViewById(R.id.pb_loading_indicator);
-        /*API KEY GOES IN THIS COMMENTED ACTION. UNCOMMENT IT TO RUN
-        URL moviesSearchUrl = NetworkUtils.buildUrl("http://api.themoviedb.org/3/movie/popular?api_key=INSERT KEY HERE");
-        new MoviesQueryTask().execute(moviesSearchUrl);*/
+        URL moviesSearchUrl = NetworkUtils.buildUrl("popular");
+        new MoviesQueryTask().execute(moviesSearchUrl);
 
 
     }
@@ -82,12 +81,16 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int menuItemThatWasSelected=item.getItemId();
         if(menuItemThatWasSelected==R.id.action_search&&item.getTitle()=="TOP RATED"){
+            URL moviesSearchUrl = NetworkUtils.buildUrl("top_rated");
+            new MoviesQueryTask().execute(moviesSearchUrl);
             Context context=MainActivity.this;
             String message="Most popular";
             toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
             toast.show();
             item.setTitle("MOST POPULAR");
         }else{
+            URL moviesSearchUrl = NetworkUtils.buildUrl("popular");
+            new MoviesQueryTask().execute(moviesSearchUrl);
             Context context=MainActivity.this;
             String message="Top rated";
             toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);

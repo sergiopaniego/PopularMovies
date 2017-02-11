@@ -59,7 +59,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
         String image="";
         try {
             jArray = json.getJSONArray("results");
-            System.out.println(jArray.getJSONObject(position).get("poster_path").toString());
             image=jArray.getJSONObject(position).get("poster_path").toString();
         } catch (JSONException e) {
             e.printStackTrace();

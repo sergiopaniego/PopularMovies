@@ -5,17 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.sergiopaniegoblanco.popularmovies.MainActivity">
-
-    <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/recycledview">
-
-    </android.support.v7.widget.RecyclerView>
     <ProgressBar
         android:layout_width="42dp"
         android:layout_height="42dp"
         android:id="@+id/pb_loading_indicator"
         android:layout_gravity="center"
         android:visibility="invisible"/>
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/recycledview">
+
+    </android.support.v7.widget.RecyclerView>
+
 </FrameLayout>
