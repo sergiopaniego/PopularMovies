@@ -1,9 +1,13 @@
 package com.example.sergiopaniegoblanco.popularmovies;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -40,40 +44,38 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mNumbersList = (RecyclerView) findViewById(R.id.recycledview);
-        GridLayoutManager gd=new GridLayoutManager(getApplicationContext(), 2);
-        mNumbersList.setLayoutManager(gd);
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        width = size.x;
-        images= (ImageView) findViewById(R.id.poster_item);
-        //errorMessage=(TextView) findViewById(R.id.error_message_display);
-        /*
-         * Use this setting to improve performance if you know that changes in content do not
-         * change the child layout size in the RecyclerView
-         */
-        mNumbersList.setHasFixedSize(true);
-
-        /*
-         * The GreenAdapter is responsible for displaying each item in the list.
-         */
-
-
-        mLoadingIndicator=(ProgressBar)findViewById(R.id.pb_loading_indicator);
-        URL moviesSearchUrl = NetworkUtils.buildUrl("popular");
-        new MoviesQueryTask().execute(moviesSearchUrl);
-
-
+        if(!isOnline()){
+            new AlertDialog.Builder(this)
+                    .setTitle("ERROR")
+                    .setMessage(R.string.errorMessage)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }else{
+            mNumbersList = (RecyclerView) findViewById(R.id.recycledview);
+            GridLayoutManager gd=new GridLayoutManager(getApplicationContext(), 2);
+            mNumbersList.setLayoutManager(gd);
+            Display display = getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            width = size.x;
+            images= (ImageView) findViewById(R.id.poster_item);
+            mNumbersList.setHasFixedSize(true);
+            mLoadingIndicator=(ProgressBar)findViewById(R.id.pb_loading_indicator);
+            URL moviesSearchUrl = NetworkUtils.buildUrl("popular");
+            new MoviesQueryTask().execute(moviesSearchUrl);
+        }
     }
-    /*private void showJsonDataView(){
-        errorMessage.setVisibility(View.INVISIBLE);
-        images.setVisibility(View.VISIBLE);
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
-    private void showErrorMessage(){
-        errorMessage.setVisibility(View.VISIBLE);
-        images.setVisibility(View.INVISIBLE);
-    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -83,36 +85,35 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int menuItemThatWasSelected=item.getItemId();
-        if(menuItemThatWasSelected==R.id.action_search&&item.getTitle()=="TOP RATED"){
+        if(menuItemThatWasSelected==R.id.action_search&&item.getTitle().equals(getString(R.string.top_rated))){
             URL moviesSearchUrl = NetworkUtils.buildUrl("top_rated");
             new MoviesQueryTask().execute(moviesSearchUrl);
             Context context=MainActivity.this;
-            String message="Most popular";
+            String message=getString(R.string.top_rated);
+            if(toast!=null){
+                toast.cancel();
+            }
             toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
             toast.show();
-            item.setTitle("MOST POPULAR");
+            item.setTitle(getString(R.string.most_popular));
         }else{
             URL moviesSearchUrl = NetworkUtils.buildUrl("popular");
             new MoviesQueryTask().execute(moviesSearchUrl);
             Context context=MainActivity.this;
-            String message="Top rated";
+            String message=getString(R.string.most_popular);
+            if(toast!=null){
+                toast.cancel();
+            }
             toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
             toast.show();
-            item.setTitle("TOP RATED");
+            item.setTitle(getString(R.string.top_rated));
         }
 
         return super.onOptionsItemSelected(item);
     }
-    Toast mToast;
     @Override
     public void onListItemClick(int clickedPosition) {
-        if(mToast!=null){
-            mToast.cancel();
-        }
         this.clickedPosition=clickedPosition;
-        String toastMessage="Item #"+clickedPosition+" clicked";
-        mToast=Toast.makeText(this,toastMessage,Toast.LENGTH_SHORT);
-        mToast.show();
         Context context = MainActivity.this;
         Class destinationActivity = DetailActivity.class;
         Intent startChildActivityIntent = new Intent(context, destinationActivity);
@@ -156,15 +157,10 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
         }
 
         @Override
-        protected void onPostExecute(String githubSearchResults) {
+        protected void onPostExecute(String SearchResults) {
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             mAdapter = new Adapter(NUM_LIST_ITEMS,width,json,MainActivity.this);
             mNumbersList.setAdapter(mAdapter);
-            if (githubSearchResults != null && !githubSearchResults.equals("")) {
-               // showJsonDataView();
-            }else{
-                //showErrorMessage();
-            }
         }
     }
 }

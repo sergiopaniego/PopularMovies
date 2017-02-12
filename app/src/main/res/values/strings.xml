@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Popular Movies</string>
+    <string name="top_rated">TOP RATED</string>
+    <string name="most_popular">MOST POPULAR</string>
+    <string name="trailer">TRAILER</string>
+    <string name="plot_synopsis">PLOT SYNOPSIS:</string>
+    <string name="reviews">REVIEWS:\n</string>
+    <string name="fav">FAV</string>
+    <string name="unfav">UNFAV</string>
+    <string name="errorMessage">No Internet Connection detected, please check the connection</string>
 </resources>
