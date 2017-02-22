@@ -1,11 +1,16 @@
 package com.example.sergiopaniegoblanco.popularmovies;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Display;
@@ -78,15 +83,36 @@ public class DetailActivity extends AppCompatActivity {
         String SearchResults = null;
         URL url2 = null;
         String SearchResults2 = null;
-        try {
-            url = new URL(builtUri.toString());
-            url2 = new URL(builtUri2.toString());
-            new MoviesQueryTask2().execute(url,url2);
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        if(!isOnline()){
+            new AlertDialog.Builder(this)
+                    .setTitle("ERROR")
+                    .setMessage(R.string.errorMessage)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }else{
+            try {
+                url = new URL(builtUri.toString());
+                url2 = new URL(builtUri2.toString());
+                new MoviesQueryTask2().execute(url,url2);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
         Picasso.with(DetailActivity.this).load("http://image.tmdb.org/t/p/w185/"+image).error(R.drawable.fff).resize(screenWidth/2, 0).into(imageDetail);
 
+    }
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     public void showTrailer(View view){
@@ -134,7 +160,7 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(String githubSearchResults) {
+        protected void onPostExecute(String SearchResults) {
             Button tx=(Button)findViewById(R.id.trailer);
             TextView text=(TextView) findViewById(R.id.review);
             JSONArray jArray = null;

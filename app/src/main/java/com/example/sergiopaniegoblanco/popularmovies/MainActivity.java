@@ -87,26 +87,52 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
         int menuItemThatWasSelected=item.getItemId();
         if(menuItemThatWasSelected==R.id.action_search&&item.getTitle().equals(getString(R.string.top_rated))){
             URL moviesSearchUrl = NetworkUtils.buildUrl("top_rated");
-            new MoviesQueryTask().execute(moviesSearchUrl);
-            Context context=MainActivity.this;
-            String message=getString(R.string.top_rated);
-            if(toast!=null){
-                toast.cancel();
+            if(!isOnline()){
+                new AlertDialog.Builder(this)
+                        .setTitle("ERROR")
+                        .setMessage(R.string.errorMessage)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }else{
+                new MoviesQueryTask().execute(moviesSearchUrl);
+                Context context=MainActivity.this;
+                String message=getString(R.string.top_rated);
+                if(toast!=null){
+                    toast.cancel();
+                }
+                toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
+                toast.show();
+                item.setTitle(getString(R.string.most_popular));
             }
-            toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
-            toast.show();
-            item.setTitle(getString(R.string.most_popular));
         }else{
-            URL moviesSearchUrl = NetworkUtils.buildUrl("popular");
-            new MoviesQueryTask().execute(moviesSearchUrl);
-            Context context=MainActivity.this;
-            String message=getString(R.string.most_popular);
-            if(toast!=null){
-                toast.cancel();
+            if(!isOnline()){
+                new AlertDialog.Builder(this)
+                        .setTitle("ERROR")
+                        .setMessage(R.string.errorMessage)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }else {
+                URL moviesSearchUrl = NetworkUtils.buildUrl("popular");
+                new MoviesQueryTask().execute(moviesSearchUrl);
+                Context context = MainActivity.this;
+                String message = getString(R.string.most_popular);
+                if (toast != null) {
+                    toast.cancel();
+                }
+                toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
+                toast.show();
+                item.setTitle(getString(R.string.top_rated));
             }
-            toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
-            toast.show();
-            item.setTitle(getString(R.string.top_rated));
         }
 
         return super.onOptionsItemSelected(item);
