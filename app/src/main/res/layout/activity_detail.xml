@@ -12,34 +12,46 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:paddingTop="10dp"
-                android:id="@+id/detailimage"/>
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
-                <TextView
+                android:background="#7B85AD"
+                android:orientation="vertical">
+                <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Default"
-                    android:id="@+id/text"
-                    android:textSize="20dp"
-                    android:textStyle="bold"
-                    android:paddingLeft="10dp"
-                    android:layout_marginRight="40dp"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/rating"
-                    android:layout_alignParentRight="true"
-                    android:textSize="20dp"
-                    android:paddingRight="10dp"/>
+                    android:layout_gravity="center"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:id="@+id/detailimage"
+                />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="20px"
+                    android:orientation="horizontal"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#ffffff"
+                        android:text="Default"
+                        android:id="@+id/text"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:paddingLeft="10dp"
+                        android:layout_marginRight="40dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/rating"
+                        android:textColor="#ffffff"
+                        android:layout_alignParentRight="true"
+                        android:textSize="20dp"
+                        android:paddingRight="10dp"/>
 
-            </RelativeLayout>
+                </RelativeLayout>
+            </LinearLayout>
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

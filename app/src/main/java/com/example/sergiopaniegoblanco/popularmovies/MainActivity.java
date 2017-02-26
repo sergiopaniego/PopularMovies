@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
             new MoviesQueryTask().execute(moviesSearchUrl);
         }
     }
+
     public boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

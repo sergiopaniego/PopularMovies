@@ -37,10 +37,10 @@ import java.util.Scanner;
 public class DetailActivity extends AppCompatActivity {
 
     private String id;
-    final static String URL_BASE="http://api.themoviedb.org/3/movie/";
-    final static String PARAM_QUERY = "api_key";
+    private final static String URL_BASE="http://api.themoviedb.org/3/movie/";
+    private final static String PARAM_QUERY = "api_key";
     //Here goes the API key
-    final static String key="";
+    private final static String key="a16751754abf6e83ee8164b68a6132e7";
     private JSONObject jsonTrailer;
     private JSONObject jsonReview;
 
@@ -66,7 +66,7 @@ public class DetailActivity extends AppCompatActivity {
             try {
                 json= new JSONObject(text);
                 ratingtx.setText(json.get("vote_average").toString()+"/10");
-                releasetx.setText("RELEASE DATE: "+json.get("release_date").toString()+"\n");
+                releasetx.setText(getString(R.string.release)+" "+json.get("release_date").toString()+"\n");
                 plottx.setText(json.get("overview").toString()+"\n");
                 image=json.get("poster_path").toString();
                 tx.setText(json.get("title").toString());
@@ -86,7 +86,7 @@ public class DetailActivity extends AppCompatActivity {
 
         if(!isOnline()){
             new AlertDialog.Builder(this)
-                    .setTitle("ERROR")
+                    .setTitle(getString(R.string.error))
                     .setMessage(R.string.errorMessage)
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
