@@ -33,13 +33,13 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
     private RecyclerView mNumbersList;
     private static final int NUM_LIST_ITEMS=20;
     private Adapter mAdapter;
-    Toast toast;
-    ProgressBar mLoadingIndicator;
-    TextView errorMessage;
-    ImageView images;
-    JSONObject json;
-    int width;
-    int clickedPosition;
+    private Toast toast;
+    private ProgressBar mLoadingIndicator;
+    private TextView errorMessage;
+    private ImageView images;
+    private JSONObject json;
+    private int width;
+    private int clickedPosition;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -138,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
 
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     public void onListItemClick(int clickedPosition) {
         this.clickedPosition=clickedPosition;
@@ -146,8 +147,6 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
         Intent startChildActivityIntent = new Intent(context, destinationActivity);
         try {
             JSONArray jArray = json.getJSONArray("results");
-            //String image=jArray.getJSONObject(clickedPosition).get("poster_path").toString();
-            //System.out.println(Integer.parseInt(json.get("page").toString()));
             System.out.println(clickedPosition);
             startChildActivityIntent.putExtra(Intent.EXTRA_TEXT,jArray.getJSONObject(clickedPosition).toString());
         } catch (JSONException e) {

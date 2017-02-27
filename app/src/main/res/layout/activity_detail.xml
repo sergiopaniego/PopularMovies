@@ -21,14 +21,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:paddingTop="10dp"
+                    android:paddingTop="10sp"
                     android:paddingBottom="10dp"
                     android:id="@+id/detailimage"
                 />
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:padding="20px"
+                    android:padding="20sp"
                     android:orientation="horizontal"
                     >
                     <TextView
@@ -37,28 +37,52 @@
                         android:textColor="#ffffff"
                         android:text="Default"
                         android:id="@+id/text"
-                        android:textSize="20dp"
+                        android:textSize="25sp"
                         android:textStyle="bold"
-                        android:paddingLeft="10dp"
-                        android:layout_marginRight="40dp"/>
-                    <TextView
+                        android:paddingLeft="10sp"
+                        android:layout_marginRight="40sp"/>
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/rating"
-                        android:textColor="#ffffff"
-                        android:layout_alignParentRight="true"
-                        android:textSize="20dp"
-                        android:paddingRight="10dp"/>
+                        android:layout_alignParentRight="true">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/rating"
+                            android:textColor="#ffffff"
+                            android:textSize="25sp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="/10"
+                            android:textColor="#ffffff"
+                            android:textSize="10sp"
+                            android:paddingRight="10dp"/>
+                    </LinearLayout>
+
 
                 </RelativeLayout>
             </LinearLayout>
-            <Button
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/trailer"
-                android:onClick="showTrailer"
-                android:id="@+id/trailer"
-                android:layout_alignParentRight="true"/>
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/trailerImage1"
+                    android:padding="0sp"
+                    android:layout_margin="5sp"
+                    android:onClick="showTrailer1"/>
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/trailerImage2"
+                    android:padding="0sp"
+                    android:layout_margin="5sp"
+                    android:onClick="showTrailer2"/>
+            </LinearLayout>
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

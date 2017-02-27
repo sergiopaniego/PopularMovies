@@ -26,10 +26,10 @@ import static android.content.ContentValues.TAG;
 
 public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
     private int mNumberItems;
-    Context context;
-    int screenWidth;
-    JSONObject json;
-    final private ListItemClickListener mOnClickListener;
+    private Context context;
+    private int screenWidth;
+    private JSONObject json;
+    private final ListItemClickListener mOnClickListener;
     private static int viewHolderCount;
 
     public Adapter(int numberOfItems,int screenWidth,JSONObject json,ListItemClickListener mOnClickListener) {

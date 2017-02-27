@@ -17,7 +17,7 @@ public class NetworkUtils {
     final static String URL_BASE="http://api.themoviedb.org/3/movie/";
     final static String PARAM_QUERY = "api_key";
     //Here goes the API key
-    final static String key="a16751754abf6e83ee8164b68a6132e7";
+    final static String key="";
     /**
      * Builds the URL used to query The Movie DB.
      *
