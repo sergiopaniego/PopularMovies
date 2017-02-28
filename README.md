@@ -1,4 +1,5 @@
 # PopularMovies
-This repository hosts the first project from the Android Fast Track Udacity course
+This repository hosts the project from the Android Fast Track Udacity course
 ### **IMPORTANT**
-To run it you need an API key from The Movie DB. That key goes in NetworkUtil and DetailActivity classes in the part that says so.
+To run it you need an API key from The Movie DB. This key will be hosted in a values xml called keys
+with a String called key with the key in it.
