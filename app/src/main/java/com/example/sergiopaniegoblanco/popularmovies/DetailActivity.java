@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -127,7 +128,7 @@ public class DetailActivity extends AppCompatActivity {
         Picasso.with(DetailActivity.this).load("http://image.tmdb.org/t/p/w185/"+image).error(R.drawable.fff).resize(screenWidth/2, 0).into(imageDetail);
         //Action bar show film name
         setTitle(null);
-        FavListDBHelper dbHelper = new FavListDBHelper(this);
+        FavListDBHelper dbHelper = FavListDBHelper.getInstance(this);
         mDb = dbHelper.getWritableDatabase();
         // provide compatibility to all the versions
     }
@@ -242,7 +243,29 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.detail_menu,menu);
+        Cursor query=getFavourites();
+        boolean found=false;
+        int position=0;
+        while(query.moveToPosition(position)&&!found){
+            if(query.getString(query.getColumnIndex(FavListContract.FavlistEntry.COLUMN_MOVIE_NAME)).equals(movieName)){
+                found=true;
+                menu.getItem(0).setIcon(R.drawable.ic_favorite_white_24dp);
+                fav=true;
+            }
+            position++;
+        }
         return true;
+    }
+    public Cursor getFavourites(){
+        return mDb.query(
+                FavListContract.FavlistEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                FavListContract.FavlistEntry.COLUMN_MOVIE_NAME
+        );
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -250,7 +273,7 @@ public class DetailActivity extends AppCompatActivity {
         if(menuItemThatWasSelected==R.id.starred){
             if(fav){
                 item.setIcon(R.drawable.ic_favorite_border_white_24dp);
-                mDb.delete(FavListContract.FavlistEntry.TABLE_NAME, FavListContract.FavlistEntry._ID+"="+id,null);
+                mDb.delete(FavListContract.FavlistEntry.TABLE_NAME, FavListContract.FavlistEntry.COLUMN_MOVIE_NAME+" = "+"movieName",null);
                 fav=false;
             }else{
                 ContentValues cv=new ContentValues();

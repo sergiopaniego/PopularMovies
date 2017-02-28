@@ -3,6 +3,8 @@ package com.example.sergiopaniegoblanco.popularmovies;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -22,6 +24,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.sergiopaniegoblanco.popularmovies.data.FavListContract;
+import com.example.sergiopaniegoblanco.popularmovies.data.FavListDBHelper;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
     private JSONObject json;
     private int width;
     private int clickedPosition;
+    private SQLiteDatabase mDb;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +75,15 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
             URL moviesSearchUrl = NetworkUtils.buildUrl("popular",getString(R.string.api_key));
             new MoviesQueryTask().execute(moviesSearchUrl);
         }
+        FavListDBHelper dbHelper = FavListDBHelper.getInstance(this);
+        mDb = dbHelper.getWritableDatabase();
+        Cursor query=getFavourites();
+        int position=0;
+        while(query.moveToPosition(position)){
+            System.out.println(query.getString(query.getColumnIndex(FavListContract.FavlistEntry.COLUMN_MOVIE_NAME)));
+            position++;
+        }
+
     }
 
     public boolean isOnline() {
@@ -148,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
         try {
             JSONArray jArray = json.getJSONArray("results");
             System.out.println(clickedPosition);
+            startChildActivityIntent.putExtra(Intent.EXTRA_REFERRER,mDb.toString());
             startChildActivityIntent.putExtra(Intent.EXTRA_TEXT,jArray.getJSONObject(clickedPosition).toString());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -188,5 +204,16 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
             mAdapter = new Adapter(NUM_LIST_ITEMS,width,json,MainActivity.this);
             mNumbersList.setAdapter(mAdapter);
         }
+    }
+    public Cursor getFavourites(){
+        return mDb.query(
+                FavListContract.FavlistEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                FavListContract.FavlistEntry.COLUMN_MOVIE_NAME
+        );
     }
 }

@@ -15,10 +15,21 @@ public class FavListDBHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version
     private static final int DATABASE_VERSION = 1;
+    private static FavListDBHelper sInstance;
 
     // Constructor
     public FavListDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+    public static synchronized FavListDBHelper getInstance(Context context) {
+
+        // Use the application context, which will ensure that you
+        // don't accidentally leak an Activity's context.
+        // See this article for more information: http://bit.ly/6LRzfx
+        if (sInstance == null) {
+            sInstance = new FavListDBHelper(context.getApplicationContext());
+        }
+        return sInstance;
     }
 
     @Override
