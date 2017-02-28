@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
             images= (ImageView) findViewById(R.id.poster_item);
             mNumbersList.setHasFixedSize(true);
             mLoadingIndicator=(ProgressBar)findViewById(R.id.pb_loading_indicator);
-            URL moviesSearchUrl = NetworkUtils.buildUrl("popular");
+            URL moviesSearchUrl = NetworkUtils.buildUrl("popular",getString(R.string.api_key));
             new MoviesQueryTask().execute(moviesSearchUrl);
         }
     }
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
     public boolean onOptionsItemSelected(MenuItem item) {
         int menuItemThatWasSelected=item.getItemId();
         if(menuItemThatWasSelected==R.id.action_search&&item.getTitle().equals(getString(R.string.top_rated))){
-            URL moviesSearchUrl = NetworkUtils.buildUrl("top_rated");
+            URL moviesSearchUrl = NetworkUtils.buildUrl("top_rated",getString(R.string.api_key));
             if(!isOnline()){
                 new AlertDialog.Builder(this)
                         .setTitle("ERROR")
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
             }else {
-                URL moviesSearchUrl = NetworkUtils.buildUrl("popular");
+                URL moviesSearchUrl = NetworkUtils.buildUrl("popular",getString(R.string.api_key));
                 new MoviesQueryTask().execute(moviesSearchUrl);
                 Context context = MainActivity.this;
                 String message = getString(R.string.most_popular);

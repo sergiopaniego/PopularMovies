@@ -17,14 +17,15 @@ public class NetworkUtils {
     final static String URL_BASE="http://api.themoviedb.org/3/movie/";
     final static String PARAM_QUERY = "api_key";
     //Here goes the API key
-    final static String key="";
+    static String key;
+
     /**
      * Builds the URL used to query The Movie DB.
      *
      * @param option The keyword that will be queried for.
      * @return The URL to use to query The Movie DB.
      */
-    public static URL buildUrl(String option) {
+    public static URL buildUrl(String option,String key) {
         Uri builtUri = Uri.parse(URL_BASE).buildUpon().appendPath(option).appendQueryParameter(PARAM_QUERY,key)
                 .build();
 
