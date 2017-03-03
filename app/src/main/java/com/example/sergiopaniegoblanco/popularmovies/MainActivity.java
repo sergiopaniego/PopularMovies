@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
     private JSONObject json;
     private int width;
     private int clickedPosition;
-    private SQLiteDatabase mDb;
+    //private SQLiteDatabase mDb;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,13 +76,13 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
             new MoviesQueryTask().execute(moviesSearchUrl);
         }
         FavListDBHelper dbHelper = FavListDBHelper.getInstance(this);
-        mDb = dbHelper.getWritableDatabase();
+        /*mDb = dbHelper.getWritableDatabase();
         Cursor query=getFavourites();
         int position=0;
         while(query.moveToPosition(position)){
             System.out.println(query.getString(query.getColumnIndex(FavListContract.FavlistEntry.COLUMN_MOVIE_NAME)));
             position++;
-        }
+        }*/
 
     }
 
@@ -163,7 +163,6 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
         try {
             JSONArray jArray = json.getJSONArray("results");
             System.out.println(clickedPosition);
-            startChildActivityIntent.putExtra(Intent.EXTRA_REFERRER,mDb.toString());
             startChildActivityIntent.putExtra(Intent.EXTRA_TEXT,jArray.getJSONObject(clickedPosition).toString());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -205,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
             mNumbersList.setAdapter(mAdapter);
         }
     }
-    public Cursor getFavourites(){
+    /*public Cursor getFavourites(){
         return mDb.query(
                 FavListContract.FavlistEntry.TABLE_NAME,
                 null,
@@ -215,5 +214,5 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
                 null,
                 FavListContract.FavlistEntry.COLUMN_MOVIE_NAME
         );
-    }
+    }*/
 }

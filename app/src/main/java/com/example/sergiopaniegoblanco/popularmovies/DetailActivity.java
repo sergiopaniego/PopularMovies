@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.sergiopaniegoblanco.popularmovies.data.FavListContract;
 import com.example.sergiopaniegoblanco.popularmovies.data.FavListDBHelper;
@@ -58,7 +59,7 @@ public class DetailActivity extends AppCompatActivity {
     private Point size;
     private int screenWidth;
     private boolean fav=false;
-    private SQLiteDatabase mDb;
+    //private SQLiteDatabase mDb;
     private String movieName;
 
 
@@ -129,7 +130,7 @@ public class DetailActivity extends AppCompatActivity {
         //Action bar show film name
         setTitle(null);
         FavListDBHelper dbHelper = FavListDBHelper.getInstance(this);
-        mDb = dbHelper.getWritableDatabase();
+        //mDb = dbHelper.getWritableDatabase();
         // provide compatibility to all the versions
     }
     public boolean isOnline() {
@@ -243,7 +244,11 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.detail_menu,menu);
-        Cursor query=getFavourites();
+        Cursor query=getContentResolver().query(FavListContract.FavlistEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
         boolean found=false;
         int position=0;
         while(query.moveToPosition(position)&&!found){
@@ -256,7 +261,7 @@ public class DetailActivity extends AppCompatActivity {
         }
         return true;
     }
-    public Cursor getFavourites(){
+    /*public Cursor getFavourites(){
         return mDb.query(
                 FavListContract.FavlistEntry.TABLE_NAME,
                 null,
@@ -266,19 +271,28 @@ public class DetailActivity extends AppCompatActivity {
                 null,
                 FavListContract.FavlistEntry.COLUMN_MOVIE_NAME
         );
-    }
+    }*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int menuItemThatWasSelected=item.getItemId();
         if(menuItemThatWasSelected==R.id.starred){
             if(fav){
                 item.setIcon(R.drawable.ic_favorite_border_white_24dp);
-                mDb.delete(FavListContract.FavlistEntry.TABLE_NAME, FavListContract.FavlistEntry.COLUMN_MOVIE_NAME+" = "+"movieName",null);
+                Uri uri=FavListContract.FavlistEntry.CONTENT_URI;
+                uri=uri.buildUpon().appendPath(movieName).build();
+                getContentResolver().delete(uri,null, null);
+                //mDb.delete(FavListContract.FavlistEntry.TABLE_NAME, FavListContract.FavlistEntry.COLUMN_MOVIE_NAME+" = "+"movieName",null);
                 fav=false;
             }else{
                 ContentValues cv=new ContentValues();
                 cv.put(FavListContract.FavlistEntry.COLUMN_MOVIE_NAME,movieName);
-                mDb.insert(FavListContract.FavlistEntry.TABLE_NAME,null,cv);
+                Uri uri = getContentResolver().insert(FavListContract.FavlistEntry.CONTENT_URI, cv);
+
+                // Display the URI that's returned with a Toast
+                // [Hint] Don't forget to call finish() to return to MainActivity after this insert is complete
+                if(uri != null) {
+                    Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
+                }
                 item.setIcon(R.drawable.ic_favorite_white_24dp);
                 fav=true;
             }

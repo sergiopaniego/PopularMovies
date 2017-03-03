@@ -23,6 +23,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.sergiopaniegoblanco.popularmovies.MainActivity" />
         </activity>
+
+        <provider
+            android:name="com.example.sergiopaniegoblanco.popularmovies.data.TaskContentProvider"
+            android:authorities="com.example.sergiopaniegoblanco.popularmovies"
+            android:exported="false"/>
     </application>
+
+
 
 </manifest>
