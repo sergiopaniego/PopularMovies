@@ -24,5 +24,7 @@ public class FavListContract {
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAVS).build();
         public static final String TABLE_NAME = "favmovies";
         public static final String COLUMN_MOVIE_NAME = "movieName";
+        public static final String COLUMN_MOVIE_POSTER = "moviewPoster";
+        public static final String COLUMN_MOVIE_JSON = "movieDetail";
     }
 }

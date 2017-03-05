@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
     private JSONObject json;
     private int width;
     private int clickedPosition;
+    private boolean fav=false;
+    private Cursor cursor;
     //private SQLiteDatabase mDb;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,9 +125,10 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
                 }
                 toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
                 toast.show();
-                item.setTitle(getString(R.string.most_popular));
+                item.setTitle(getString(R.string.fav));
+                fav=false;
             }
-        }else{
+        }else if(menuItemThatWasSelected==R.id.action_search&&item.getTitle().equals(getString(R.string.most_popular))){
             if(!isOnline()){
                 new AlertDialog.Builder(this)
                         .setTitle("ERROR")
@@ -148,7 +151,46 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
                 toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
                 toast.show();
                 item.setTitle(getString(R.string.top_rated));
+                fav=false;
             }
+        }else{
+            if(!isOnline()){
+                new AlertDialog.Builder(this)
+                        .setTitle("ERROR")
+                        .setMessage(R.string.errorMessage)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }else{
+                mLoadingIndicator.setVisibility(View.VISIBLE);
+                cursor=getContentResolver().query(FavListContract.FavlistEntry.CONTENT_URI,
+                        null,
+                        null,
+                        null,
+                        FavListContract.FavlistEntry.COLUMN_MOVIE_NAME);
+                mLoadingIndicator.setVisibility(View.INVISIBLE);
+                mAdapter = new Adapter(cursor.getCount(),width,cursor,MainActivity.this);
+                mNumbersList.setAdapter(mAdapter);
+                Context context = MainActivity.this;
+                String message = getString(R.string.fav);
+                if (toast != null) {
+                    toast.cancel();
+                }
+                fav=true;
+                toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
+                toast.show();
+                item.setTitle(getString(R.string.most_popular));
+                fav=true;
+            }
+            /*int position=0;
+            while(cursor.moveToPosition(position)){
+                System.out.println(cursor.getString(cursor.getColumnIndex(FavListContract.FavlistEntry.COLUMN_MOVIE_NAME)));
+                position++;
+            }*/
         }
 
         return super.onOptionsItemSelected(item);
@@ -160,12 +202,17 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
         Context context = MainActivity.this;
         Class destinationActivity = DetailActivity.class;
         Intent startChildActivityIntent = new Intent(context, destinationActivity);
-        try {
-            JSONArray jArray = json.getJSONArray("results");
-            System.out.println(clickedPosition);
-            startChildActivityIntent.putExtra(Intent.EXTRA_TEXT,jArray.getJSONObject(clickedPosition).toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if(fav){
+            cursor.moveToPosition(clickedPosition);
+            startChildActivityIntent.putExtra(Intent.EXTRA_TEXT,cursor.getString(cursor.getColumnIndex(FavListContract.FavlistEntry.COLUMN_MOVIE_JSON)));
+        }else{
+            try {
+                JSONArray jArray = json.getJSONArray("results");
+                System.out.println(clickedPosition);
+                startChildActivityIntent.putExtra(Intent.EXTRA_TEXT,jArray.getJSONObject(clickedPosition).toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         startActivity(startChildActivityIntent);
     }

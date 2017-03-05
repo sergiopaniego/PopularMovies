@@ -91,11 +91,13 @@
             </LinearLayout>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="15dp"
                 android:text="@string/plot_synopsis"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:gravity="center"
+                android:background="#7B85AD"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -104,11 +106,13 @@
                 android:id="@+id/plot"/>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/reviews"
                 android:textSize="15dp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:gravity="center"
+                android:background="#7B85AD"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -61,6 +61,8 @@ public class DetailActivity extends AppCompatActivity {
     private boolean fav=false;
     //private SQLiteDatabase mDb;
     private String movieName;
+    private String image="";
+    private String text;
 
 
     @Override
@@ -68,7 +70,6 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         ImageView imageDetail=(ImageView) findViewById(R.id.detailimage);
-        String image="";
         display = getWindowManager().getDefaultDisplay();
         size = new Point();
         display.getSize(size);
@@ -80,7 +81,7 @@ public class DetailActivity extends AppCompatActivity {
         TextView releasetx=(TextView) findViewById(R.id.release_date);
         TextView plottx=(TextView) findViewById(R.id.plot);
         if(intent.hasExtra(Intent.EXTRA_TEXT)){
-            String text=intent.getStringExtra(Intent.EXTRA_TEXT);
+            text=intent.getStringExtra(Intent.EXTRA_TEXT);
             try {
                 json= new JSONObject(text);
                 ratingtx.setText(json.get("vote_average").toString());
@@ -286,6 +287,8 @@ public class DetailActivity extends AppCompatActivity {
             }else{
                 ContentValues cv=new ContentValues();
                 cv.put(FavListContract.FavlistEntry.COLUMN_MOVIE_NAME,movieName);
+                cv.put(FavListContract.FavlistEntry.COLUMN_MOVIE_POSTER,"http://image.tmdb.org/t/p/w185/"+image);
+                cv.put(FavListContract.FavlistEntry.COLUMN_MOVIE_JSON,text);
                 Uri uri = getContentResolver().insert(FavListContract.FavlistEntry.CONTENT_URI, cv);
 
                 // Display the URI that's returned with a Toast

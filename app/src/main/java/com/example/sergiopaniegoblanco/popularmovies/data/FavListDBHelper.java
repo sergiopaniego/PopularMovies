@@ -14,7 +14,7 @@ public class FavListDBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "favmovies.db";
 
     // If you change the database schema, you must increment the database version
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static FavListDBHelper sInstance;
 
     // Constructor
@@ -38,7 +38,9 @@ public class FavListDBHelper extends SQLiteOpenHelper {
         // Create a table to hold waitlist data
         final String SQL_CREATE_WAITLIST_TABLE = "CREATE TABLE " + FavlistEntry.TABLE_NAME + " (" +
                 FavlistEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                FavlistEntry.COLUMN_MOVIE_NAME + " TEXT NOT NULL" +
+                FavlistEntry.COLUMN_MOVIE_NAME + " TEXT NOT NULL," +
+                FavlistEntry.COLUMN_MOVIE_POSTER + " TEXT NOT NULL, " +
+                FavlistEntry.COLUMN_MOVIE_JSON + " TEXT NOT NULL" +
                 "); ";
 
         sqLiteDatabase.execSQL(SQL_CREATE_WAITLIST_TABLE);

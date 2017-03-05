@@ -1,6 +1,7 @@
 package com.example.sergiopaniegoblanco.popularmovies;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.provider.Settings;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.sergiopaniegoblanco.popularmovies.data.FavListContract;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -31,12 +33,20 @@ public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
     private JSONObject json;
     private final ListItemClickListener mOnClickListener;
     private static int viewHolderCount;
+    private Cursor cursor;
 
     public Adapter(int numberOfItems,int screenWidth,JSONObject json,ListItemClickListener mOnClickListener) {
         mNumberItems = numberOfItems;
         this.screenWidth=screenWidth;
         this.mOnClickListener=mOnClickListener;
         this.json=json;
+        viewHolderCount = 0;
+    }
+    public Adapter(int numberOfItems, int screenWidth, Cursor cursor, ListItemClickListener mOnClickListener) {
+        mNumberItems = numberOfItems;
+        this.screenWidth=screenWidth;
+        this.mOnClickListener=mOnClickListener;
+        this.cursor=cursor;
         viewHolderCount = 0;
     }
 
@@ -62,19 +72,25 @@ public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
     @Override
     public void onBindViewHolder(PosterViewHolder holder, int position) {
         Log.d(TAG, "#" + position);
-        JSONArray jArray;
         String image="";
-        try {
-            jArray = json.getJSONArray("results");
-            image=jArray.getJSONObject(position).get("poster_path").toString();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }catch (NullPointerException ex){
-        }
-        if(!image.equals(""))
-            Picasso.with(context).load("http://image.tmdb.org/t/p/w185/"+image).error(R.drawable.fff).resize(screenWidth/2, 0).into(holder.listItemNumberView);
-        else{
+        if(cursor!=null){
+            cursor.moveToPosition(position);
+            image=cursor.getString(cursor.getColumnIndex(FavListContract.FavlistEntry.COLUMN_MOVIE_POSTER));
+            Picasso.with(context).load(image).error(R.drawable.fff).resize(screenWidth/2, 0).into(holder.listItemNumberView);
+        }else{
+            JSONArray jArray;
+            try {
+                jArray = json.getJSONArray("results");
+                image=jArray.getJSONObject(position).get("poster_path").toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }catch (NullPointerException ex){
+            }
+            if(!image.equals(""))
+                Picasso.with(context).load("http://image.tmdb.org/t/p/w185/"+image).error(R.drawable.fff).resize(screenWidth/2, 0).into(holder.listItemNumberView);
+            else{
 
+            }
         }
     }
 
@@ -119,7 +135,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
         public void onClick(View view) {
             int clickedPosition=getAdapterPosition();
             mOnClickListener.onListItemClick(clickedPosition);
-            System.out.println("CLICKED");
         }
     }
 
