@@ -5,16 +5,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.provider.Settings;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,7 +17,6 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,16 +29,10 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Scanner;
 
-import static android.R.attr.name;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -210,9 +198,12 @@ public class DetailActivity extends AppCompatActivity {
                 jArray = jsonReview.getJSONArray("results");
                 for(int i=0;i<number;i++){
                     String review = jArray.getJSONObject(i).get("content").toString();
-                    text.append("Review "+String.valueOf(i+1)+":\n");
+                    text.append(" Review "+String.valueOf(i+1)+":\n");
                     text.append(review);
-                    text.append("\n\n\n\n");
+                    text.append("\n\n");
+                }
+                if(Integer.parseInt(jsonReview.get("total_results").toString())==0){
+                    text.append("NO REVIEWS AVAILABLE FOR THIS MOVIE, SORRY :(");
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -262,17 +253,7 @@ public class DetailActivity extends AppCompatActivity {
         }
         return true;
     }
-    /*public Cursor getFavourites(){
-        return mDb.query(
-                FavListContract.FavlistEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                FavListContract.FavlistEntry.COLUMN_MOVIE_NAME
-        );
-    }*/
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int menuItemThatWasSelected=item.getItemId();

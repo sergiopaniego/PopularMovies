@@ -4,7 +4,7 @@
     <string name="most_popular">MOST POPULAR</string>
     <string name="trailer">TRAILER</string>
     <string name="plot_synopsis">PLOT SYNOPSIS:</string>
-    <string name="reviews">REVIEWS:\n</string>
+    <string name="reviews">REVIEWS:</string>
     <string name="fav">FAV</string>
     <string name="unfav">UNFAV</string>
     <string name="release">RELEASE DATE:</string>
