@@ -10,7 +10,7 @@
         android:layout_height="wrap_content">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
             <LinearLayout
                 android:layout_width="match_parent"
@@ -22,13 +22,13 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:paddingTop="10sp"
-                    android:paddingBottom="10dp"
+                    android:paddingBottom="10sp"
                     android:id="@+id/detailimage"
                 />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="15dp"
+                    android:textSize="@dimen/main_text_size"
                     android:textStyle="bold"
                     android:id="@+id/release_date"
                     android:textColor="#ffffff"/>
@@ -42,9 +42,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="#ffffff"
-                        android:text="Default"
-                        android:id="@+id/text"
-                        android:textSize="25sp"
+                        android:id="@+id/title"
+                        android:textSize="@dimen/title_text_size"
                         android:textStyle="bold"
                         android:paddingLeft="10sp"
                         android:layout_marginRight="40sp"/>
@@ -61,10 +60,10 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="/10"
+                            android:text="@string/outOf10"
                             android:textColor="#ffffff"
-                            android:textSize="10sp"
-                            android:paddingRight="10dp"/>
+                            android:textSize="@dimen/small_text_size"
+                            android:paddingRight="10sp"/>
                     </LinearLayout>
 
 
@@ -80,20 +79,22 @@
                     android:id="@+id/trailerImage1"
                     android:padding="0sp"
                     android:layout_margin="5sp"
-                    android:onClick="showTrailer1"/>
+                    android:onClick="showTrailer1"
+                    tools:ignore="ContentDescription"/>
                 <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/trailerImage2"
                     android:padding="0sp"
                     android:layout_margin="5sp"
-                    android:onClick="showTrailer2"/>
+                    android:onClick="showTrailer2"
+                    tools:ignore="ContentDescription"/>
             </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
+                android:textSize="@dimen/main_text_size"
                 android:text="@string/plot_synopsis"
                 android:textStyle="bold"
                 android:gravity="center"
@@ -101,14 +102,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="@dimen/secondary_text_size"
                 android:textStyle="bold"
                 android:id="@+id/plot"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
+                android:textSize="@dimen/main_text_size"
                 android:text="@string/reviews"
                 android:textStyle="bold"
                 android:gravity="center"
@@ -117,7 +118,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/review"
-                android:textSize="12sp"
+                android:textSize="@dimen/secondary_text_size"
                 android:textStyle="bold"/>
         </LinearLayout>
     </ScrollView>

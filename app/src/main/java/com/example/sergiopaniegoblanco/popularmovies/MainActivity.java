@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -47,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
     private int clickedPosition;
     private boolean fav=false;
     private Cursor cursor;
-    //private SQLiteDatabase mDb;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
                     .show();
         }else{
             mNumbersList = (RecyclerView) findViewById(R.id.recycledview);
-            GridLayoutManager gd=new GridLayoutManager(getApplicationContext(), 2);
+            GridLayoutManager gd = new GridLayoutManager(getApplicationContext(), calculateNoOfColumns(getApplicationContext()));
             mNumbersList.setLayoutManager(gd);
             Display display = getWindowManager().getDefaultDisplay();
             Point size = new Point();
@@ -78,14 +78,6 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
             new MoviesQueryTask().execute(moviesSearchUrl);
         }
         FavListDBHelper dbHelper = FavListDBHelper.getInstance(this);
-        /*mDb = dbHelper.getWritableDatabase();
-        Cursor query=getFavourites();
-        int position=0;
-        while(query.moveToPosition(position)){
-            System.out.println(query.getString(query.getColumnIndex(FavListContract.FavlistEntry.COLUMN_MOVIE_NAME)));
-            position++;
-        }*/
-
     }
 
     public boolean isOnline() {
@@ -173,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
                         null,
                         FavListContract.FavlistEntry.COLUMN_MOVIE_NAME);
                 mLoadingIndicator.setVisibility(View.INVISIBLE);
-                mAdapter = new Adapter(cursor.getCount(),width,cursor,MainActivity.this);
+                mAdapter = new Adapter(cursor.getCount(),width,cursor,MainActivity.this,calculateNoOfColumns(getApplicationContext()));
                 mNumbersList.setAdapter(mAdapter);
                 Context context = MainActivity.this;
                 String message = getString(R.string.fav);
@@ -186,11 +178,6 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
                 item.setTitle(getString(R.string.most_popular));
                 fav=true;
             }
-            /*int position=0;
-            while(cursor.moveToPosition(position)){
-                System.out.println(cursor.getString(cursor.getColumnIndex(FavListContract.FavlistEntry.COLUMN_MOVIE_NAME)));
-                position++;
-            }*/
         }
 
         return super.onOptionsItemSelected(item);
@@ -219,8 +206,6 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
 
 
     public class MoviesQueryTask extends AsyncTask<URL, Void, String> {
-
-
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -247,19 +232,14 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
         @Override
         protected void onPostExecute(String SearchResults) {
             mLoadingIndicator.setVisibility(View.INVISIBLE);
-            mAdapter = new Adapter(NUM_LIST_ITEMS,width,json,MainActivity.this);
+            mAdapter = new Adapter(NUM_LIST_ITEMS,width,json,MainActivity.this,calculateNoOfColumns(getApplicationContext()));
             mNumbersList.setAdapter(mAdapter);
         }
     }
-    /*public Cursor getFavourites(){
-        return mDb.query(
-                FavListContract.FavlistEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                FavListContract.FavlistEntry.COLUMN_MOVIE_NAME
-        );
-    }*/
+    public static int calculateNoOfColumns(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        int noOfColumns = (int) (dpWidth / 180);
+        return noOfColumns;
+    }
 }

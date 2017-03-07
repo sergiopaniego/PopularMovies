@@ -7,7 +7,14 @@
     <string name="reviews">REVIEWS:</string>
     <string name="fav">FAV</string>
     <string name="unfav">UNFAV</string>
-    <string name="release">RELEASE DATE:</string>
+    <string name="release">RELEASE DATE: %1$s</string>
     <string name="error">ERROR</string>
+    <string name="plot">%1$s</string>
+    <string name="rating">%1$s</string>
+    <string name="title">%1$s</string>
     <string name="errorMessage">No Internet Connection detected, please check the connection</string>
+    <string name="outOf10">/10</string>
+    <string name="no_reviews">NO REVIEWS AVAILABLE FOR THIS MOVIE, SORRY :(</string>
+    <string name="youtube">http://www.youtube.com/watch?v=</string>
+    <string name="image_db">http://image.tmdb.org/t/p/w185/</string>
 </resources>

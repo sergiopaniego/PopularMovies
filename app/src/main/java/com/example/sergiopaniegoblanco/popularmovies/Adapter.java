@@ -34,20 +34,23 @@ public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
     private final ListItemClickListener mOnClickListener;
     private static int viewHolderCount;
     private Cursor cursor;
+    private int columns;
 
-    public Adapter(int numberOfItems,int screenWidth,JSONObject json,ListItemClickListener mOnClickListener) {
+    public Adapter(int numberOfItems,int screenWidth,JSONObject json,ListItemClickListener mOnClickListener,int columns) {
         mNumberItems = numberOfItems;
         this.screenWidth=screenWidth;
         this.mOnClickListener=mOnClickListener;
         this.json=json;
         viewHolderCount = 0;
+        this.columns=columns;
     }
-    public Adapter(int numberOfItems, int screenWidth, Cursor cursor, ListItemClickListener mOnClickListener) {
+    public Adapter(int numberOfItems, int screenWidth, Cursor cursor, ListItemClickListener mOnClickListener,int columns) {
         mNumberItems = numberOfItems;
         this.screenWidth=screenWidth;
         this.mOnClickListener=mOnClickListener;
         this.cursor=cursor;
         viewHolderCount = 0;
+        this.columns=columns;
     }
 
     public void setJson(JSONObject json) {
@@ -76,7 +79,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
         if(cursor!=null){
             cursor.moveToPosition(position);
             image=cursor.getString(cursor.getColumnIndex(FavListContract.FavlistEntry.COLUMN_MOVIE_POSTER));
-            Picasso.with(context).load(image).error(R.drawable.fff).resize(screenWidth/2, 0).into(holder.listItemNumberView);
+            Picasso.with(context).load(image).error(R.drawable.fff).resize(screenWidth/columns, 0).into(holder.listItemNumberView);
         }else{
             JSONArray jArray;
             try {
@@ -87,7 +90,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
             }catch (NullPointerException ex){
             }
             if(!image.equals(""))
-                Picasso.with(context).load("http://image.tmdb.org/t/p/w185/"+image).error(R.drawable.fff).resize(screenWidth/2, 0).into(holder.listItemNumberView);
+                Picasso.with(context).load("http://image.tmdb.org/t/p/w185/"+image).error(R.drawable.fff).resize(screenWidth/columns, 0).into(holder.listItemNumberView);
             else{
 
             }

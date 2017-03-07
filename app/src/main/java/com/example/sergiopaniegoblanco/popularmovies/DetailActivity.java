@@ -40,14 +40,10 @@ public class DetailActivity extends AppCompatActivity {
     private final static String URL_BASE="http://api.themoviedb.org/3/movie/";
     private final static String URL_BASE_YOUTUBE="https://img.youtube.com/vi/";
     private final static String PARAM_QUERY = "api_key";
-    //Here goes the API key
     private JSONObject jsonTrailer;
     private JSONObject jsonReview;
-    private Display display;
-    private Point size;
     private int screenWidth;
     private boolean fav=false;
-    //private SQLiteDatabase mDb;
     private String movieName;
     private String image="";
     private String text;
@@ -57,27 +53,31 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
         ImageView imageDetail=(ImageView) findViewById(R.id.detailimage);
-        display = getWindowManager().getDefaultDisplay();
-        size = new Point();
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
         display.getSize(size);
         screenWidth = size.x;
         Intent intent=getIntent();
         JSONObject json;
-        TextView tx=(TextView) findViewById(R.id.text);
-        TextView ratingtx=(TextView) findViewById(R.id.rating);
-        TextView releasetx=(TextView) findViewById(R.id.release_date);
-        TextView plottx=(TextView) findViewById(R.id.plot);
+        TextView title=(TextView) findViewById(R.id.title);
+        TextView ratingText=(TextView) findViewById(R.id.rating);
+        TextView releaseText=(TextView) findViewById(R.id.release_date);
+        TextView plotText=(TextView) findViewById(R.id.plot);
+        URL url;
+        URL url2;
+
         if(intent.hasExtra(Intent.EXTRA_TEXT)){
             text=intent.getStringExtra(Intent.EXTRA_TEXT);
             try {
                 json= new JSONObject(text);
-                ratingtx.setText(json.get("vote_average").toString());
-                releasetx.setText(getString(R.string.release)+" "+json.get("release_date").toString()+"\n");
-                plottx.setText(json.get("overview").toString()+"\n");
+                ratingText.setText(String.format(getResources().getString(R.string.rating),json.get("vote_average").toString()));
+                releaseText.setText(String.format(getResources().getString(R.string.release), json.get("release_date").toString()));
+                plotText.setText(String.format(getResources().getString(R.string.plot),json.get("overview").toString()));
                 image=json.get("poster_path").toString();
                 movieName=json.get("title").toString();
-                tx.setText(json.get("title").toString());
+                title.setText(String.format(getResources().getString(R.string.title),json.get("title").toString()));
                 id=json.get("id").toString();
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -87,11 +87,6 @@ public class DetailActivity extends AppCompatActivity {
                 .build();
         Uri builtUri2 = Uri.parse(URL_BASE).buildUpon().appendPath(id).appendPath("reviews").appendQueryParameter(PARAM_QUERY,getString(R.string.api_key))
                 .build();
-
-        URL url = null;
-        String SearchResults = null;
-        URL url2 = null;
-        String SearchResults2 = null;
 
         if(!isOnline()){
             new AlertDialog.Builder(this)
@@ -113,14 +108,9 @@ public class DetailActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-
-
-        Picasso.with(DetailActivity.this).load("http://image.tmdb.org/t/p/w185/"+image).error(R.drawable.fff).resize(screenWidth/2, 0).into(imageDetail);
+        Picasso.with(DetailActivity.this).load(getString(R.string.image_db)+image).error(R.drawable.fff).resize(screenWidth/2, 0).into(imageDetail);
         //Action bar show film name
         setTitle(null);
-        FavListDBHelper dbHelper = FavListDBHelper.getInstance(this);
-        //mDb = dbHelper.getWritableDatabase();
-        // provide compatibility to all the versions
     }
     public boolean isOnline() {
         ConnectivityManager cm =
@@ -138,7 +128,7 @@ public class DetailActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Uri uri= Uri.parse("http://www.youtube.com/watch?v="+videoKey);
+        Uri uri= Uri.parse(getString(R.string.youtube)+videoKey);
         intent.setData(uri);
         if(intent.resolveActivity(getPackageManager())!=null){
             startActivity(intent);
@@ -154,14 +144,14 @@ public class DetailActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Uri uri= Uri.parse("http://www.youtube.com/watch?v="+videoKey);
+        Uri uri= Uri.parse(getString(R.string.youtube)+videoKey);
         intent.setData(uri);
         if(intent.resolveActivity(getPackageManager())!=null){
             startActivity(intent);
         }
 
     }
-    public class MoviesQueryTask extends AsyncTask<URL, Void, String> {
+    private class MoviesQueryTask extends AsyncTask<URL, Void, String> {
 
 
         @Override
@@ -192,7 +182,7 @@ public class DetailActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String SearchResults) {
             TextView text=(TextView) findViewById(R.id.review);
-            JSONArray jArray = null;
+            JSONArray jArray;
             try {
                 int number=Integer.parseInt(jsonReview.get("total_results").toString());
                 jArray = jsonReview.getJSONArray("results");
@@ -203,7 +193,7 @@ public class DetailActivity extends AppCompatActivity {
                     text.append("\n\n");
                 }
                 if(Integer.parseInt(jsonReview.get("total_results").toString())==0){
-                    text.append("NO REVIEWS AVAILABLE FOR THIS MOVIE, SORRY :(");
+                    text.append(getString(R.string.no_reviews));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -263,12 +253,11 @@ public class DetailActivity extends AppCompatActivity {
                 Uri uri=FavListContract.FavlistEntry.CONTENT_URI;
                 uri=uri.buildUpon().appendPath(movieName).build();
                 getContentResolver().delete(uri,null, null);
-                //mDb.delete(FavListContract.FavlistEntry.TABLE_NAME, FavListContract.FavlistEntry.COLUMN_MOVIE_NAME+" = "+"movieName",null);
                 fav=false;
             }else{
                 ContentValues cv=new ContentValues();
                 cv.put(FavListContract.FavlistEntry.COLUMN_MOVIE_NAME,movieName);
-                cv.put(FavListContract.FavlistEntry.COLUMN_MOVIE_POSTER,"http://image.tmdb.org/t/p/w185/"+image);
+                cv.put(FavListContract.FavlistEntry.COLUMN_MOVIE_POSTER,getString(R.string.image_db)+image);
                 cv.put(FavListContract.FavlistEntry.COLUMN_MOVIE_JSON,text);
                 Uri uri = getContentResolver().insert(FavListContract.FavlistEntry.CONTENT_URI, cv);
 
