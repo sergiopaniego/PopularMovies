@@ -261,6 +261,7 @@ public class DetailActivity extends AppCompatActivity {
                 cv.put(FavListContract.FavlistEntry.COLUMN_MOVIE_NAME,movieName);
                 cv.put(FavListContract.FavlistEntry.COLUMN_MOVIE_POSTER,getString(R.string.image_db)+image);
                 cv.put(FavListContract.FavlistEntry.COLUMN_MOVIE_JSON,text);
+                Uri uri = getContentResolver().insert(FavListContract.FavlistEntry.CONTENT_URI, cv);
                 item.setIcon(R.drawable.ic_favorite_white_24dp);
                 fav=true;
             }

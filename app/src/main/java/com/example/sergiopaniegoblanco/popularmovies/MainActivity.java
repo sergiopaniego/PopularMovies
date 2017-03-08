@@ -9,6 +9,7 @@ import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URL;
 
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -42,16 +44,20 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
     private static final int NUM_LIST_ITEMS=20;
     private Adapter mAdapter;
     private Toast toast;
-    //private ImageView images;
     private TextView errorMessage;
     private JSONObject json;
     private int width;
     private int clickedPosition;
     private boolean fav=false;
     private Cursor cursor;
+    private Menu menu;
+    private String previuosMenuOption;
+
+    private static final String MENU_TEXT_KEY = "menu";
 
     @BindView(R.id.recycledview) RecyclerView mNumbersList;
     @BindView(R.id.pb_loading_indicator) ProgressBar mLoadingIndicator;
+    @BindString(R.string.top_rated) String menuOptionSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,11 +84,36 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
             width = size.x;
             //images = ButterKnife.findById(this, R.id.poster_item);
             mNumbersList.setHasFixedSize(true);
-            URL moviesSearchUrl = NetworkUtils.buildUrl("popular",getString(R.string.api_key));
-            new MoviesQueryTask().execute(moviesSearchUrl);
+            if (savedInstanceState != null) {
+                if (savedInstanceState.containsKey(MENU_TEXT_KEY)) {
+                    previuosMenuOption = savedInstanceState.getString(MENU_TEXT_KEY);
+                    System.out.println(previuosMenuOption);
+                    if(previuosMenuOption.equals(getString(R.string.fav))){
+                        menuTopRated(null);
+                    }else if(previuosMenuOption.equals(getString(R.string.most_popular))){
+                        menuFavMovies(null);
+                    }else{
+                        URL moviesSearchUrl = NetworkUtils.buildUrl("popular",getString(R.string.api_key));
+                        new MoviesQueryTask().execute(moviesSearchUrl);
+                    }
+                    menuOptionSelected=previuosMenuOption;
+                }
+            }else{
+                URL moviesSearchUrl = NetworkUtils.buildUrl("popular",getString(R.string.api_key));
+                new MoviesQueryTask().execute(moviesSearchUrl);
+            }
         }
-        FavListDBHelper dbHelper = FavListDBHelper.getInstance(this);
+
+
     }
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if(menuOptionSelected.equals(getString(R.string.most_popular))){
+            menuFavMovies(null);
+        }
+    }
+
 
     public boolean isOnline() {
         ConnectivityManager cm =
@@ -94,92 +125,20 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu,menu);
+        MenuItem item = menu.findItem(R.id.action_search);
+        if(previuosMenuOption!=null)
+            item.setTitle(previuosMenuOption);
         return true;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int menuItemThatWasSelected=item.getItemId();
         if(menuItemThatWasSelected==R.id.action_search&&item.getTitle().equals(getString(R.string.top_rated))){
-            URL moviesSearchUrl = NetworkUtils.buildUrl("top_rated",getString(R.string.api_key));
-            if(!isOnline()){
-                new AlertDialog.Builder(this)
-                        .setTitle("ERROR")
-                        .setMessage(R.string.errorMessage)
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-            }else{
-                new MoviesQueryTask().execute(moviesSearchUrl);
-                Context context=MainActivity.this;
-                String message=getString(R.string.top_rated);
-                if(toast!=null){
-                    toast.cancel();
-                }
-                toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
-                toast.show();
-                item.setTitle(getString(R.string.fav));
-                fav=false;
-            }
+            menuTopRated(item);
         }else if(menuItemThatWasSelected==R.id.action_search&&item.getTitle().equals(getString(R.string.most_popular))){
-            if(!isOnline()){
-                new AlertDialog.Builder(this)
-                        .setTitle("ERROR")
-                        .setMessage(R.string.errorMessage)
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-            }else {
-                URL moviesSearchUrl = NetworkUtils.buildUrl("popular",getString(R.string.api_key));
-                new MoviesQueryTask().execute(moviesSearchUrl);
-                Context context = MainActivity.this;
-                String message = getString(R.string.most_popular);
-                if (toast != null) {
-                    toast.cancel();
-                }
-                toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
-                toast.show();
-                item.setTitle(getString(R.string.top_rated));
-                fav=false;
-            }
+            menuMostPopular(item);
         }else{
-            if(!isOnline()){
-                new AlertDialog.Builder(this)
-                        .setTitle("ERROR")
-                        .setMessage(R.string.errorMessage)
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-            }else{
-                cursor=getContentResolver().query(FavListContract.FavlistEntry.CONTENT_URI,
-                        null,
-                        null,
-                        null,
-                        FavListContract.FavlistEntry.COLUMN_MOVIE_NAME);
-                mAdapter = new Adapter(cursor.getCount(),width,cursor,MainActivity.this,calculateNoOfColumns(getApplicationContext()));
-                mNumbersList.setAdapter(mAdapter);
-                Context context = MainActivity.this;
-                String message = getString(R.string.fav);
-                if (toast != null) {
-                    toast.cancel();
-                }
-                fav=true;
-                toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
-                toast.show();
-                item.setTitle(getString(R.string.most_popular));
-                fav=true;
-            }
+            menuFavMovies(item);
         }
 
         return super.onOptionsItemSelected(item);
@@ -242,5 +201,104 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
         int noOfColumns = (int) (dpWidth / 180);
         return noOfColumns;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(MENU_TEXT_KEY, menuOptionSelected);
+    }
+
+    public void menuTopRated(@Nullable MenuItem item){
+        URL moviesSearchUrl = NetworkUtils.buildUrl("top_rated",getString(R.string.api_key));
+        if(!isOnline()){
+            new AlertDialog.Builder(this)
+                    .setTitle("ERROR")
+                    .setMessage(R.string.errorMessage)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }else{
+            menuOptionSelected=getString(R.string.fav);
+            new MoviesQueryTask().execute(moviesSearchUrl);
+            Context context=MainActivity.this;
+            String message=getString(R.string.top_rated);
+            if(toast!=null){
+                toast.cancel();
+            }
+            toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
+            toast.show();
+            if(item!=null){
+                item.setTitle(getString(R.string.fav));
+            }
+            fav=false;
+        }
+    }
+
+    public void menuMostPopular(MenuItem item){
+        if(!isOnline()){
+            new AlertDialog.Builder(this)
+                    .setTitle("ERROR")
+                    .setMessage(R.string.errorMessage)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }else {
+            menuOptionSelected=getString(R.string.top_rated);
+            URL moviesSearchUrl = NetworkUtils.buildUrl("popular",getString(R.string.api_key));
+            new MoviesQueryTask().execute(moviesSearchUrl);
+            Context context = MainActivity.this;
+            String message = getString(R.string.most_popular);
+            if (toast != null) {
+                toast.cancel();
+            }
+            toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
+            toast.show();
+            item.setTitle(getString(R.string.top_rated));
+            fav=false;
+        }
+    }
+    public void menuFavMovies(@Nullable MenuItem item){
+        if(!isOnline()){
+            new AlertDialog.Builder(this)
+                    .setTitle("ERROR")
+                    .setMessage(R.string.errorMessage)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }else{
+            menuOptionSelected=getString(R.string.most_popular);
+            cursor=getContentResolver().query(FavListContract.FavlistEntry.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    FavListContract.FavlistEntry.COLUMN_MOVIE_NAME);
+            mAdapter = new Adapter(cursor.getCount(),width,cursor,MainActivity.this,calculateNoOfColumns(getApplicationContext()));
+            mNumbersList.setAdapter(mAdapter);
+            Context context = MainActivity.this;
+            String message = getString(R.string.fav);
+            if (toast != null) {
+                toast.cancel();
+            }
+            fav=true;
+            toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
+            toast.show();
+            if(item!=null){
+                item.setTitle(getString(R.string.most_popular));
+            }
+            fav=true;
+        }
     }
 }
