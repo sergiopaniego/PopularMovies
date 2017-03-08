@@ -20,6 +20,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import butterknife.ButterKnife;
+
 import static android.content.ContentValues.TAG;
 
 /**
@@ -122,7 +124,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.PosterViewHolder>{
         public PosterViewHolder(View itemView) {
             super(itemView);
 
-            listItemNumberView = (ImageView) itemView.findViewById(R.id.poster_item);
+            listItemNumberView = ButterKnife.findById(itemView,R.id.poster_item);
             itemView.setOnClickListener(this);
         }
 

@@ -35,23 +35,29 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URL;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity implements Adapter.ListItemClickListener{
-    private RecyclerView mNumbersList;
     private static final int NUM_LIST_ITEMS=20;
     private Adapter mAdapter;
     private Toast toast;
-    private ProgressBar mLoadingIndicator;
+    //private ImageView images;
     private TextView errorMessage;
-    private ImageView images;
     private JSONObject json;
     private int width;
     private int clickedPosition;
     private boolean fav=false;
     private Cursor cursor;
+
+    @BindView(R.id.recycledview) RecyclerView mNumbersList;
+    @BindView(R.id.pb_loading_indicator) ProgressBar mLoadingIndicator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         if(!isOnline()){
             new AlertDialog.Builder(this)
                     .setTitle("ERROR")
@@ -64,16 +70,14 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
         }else{
-            mNumbersList = (RecyclerView) findViewById(R.id.recycledview);
             GridLayoutManager gd = new GridLayoutManager(getApplicationContext(), calculateNoOfColumns(getApplicationContext()));
             mNumbersList.setLayoutManager(gd);
             Display display = getWindowManager().getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
             width = size.x;
-            images= (ImageView) findViewById(R.id.poster_item);
+            //images = ButterKnife.findById(this, R.id.poster_item);
             mNumbersList.setHasFixedSize(true);
-            mLoadingIndicator=(ProgressBar)findViewById(R.id.pb_loading_indicator);
             URL moviesSearchUrl = NetworkUtils.buildUrl("popular",getString(R.string.api_key));
             new MoviesQueryTask().execute(moviesSearchUrl);
         }
@@ -158,13 +162,11 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
             }else{
-                mLoadingIndicator.setVisibility(View.VISIBLE);
                 cursor=getContentResolver().query(FavListContract.FavlistEntry.CONTENT_URI,
                         null,
                         null,
                         null,
                         FavListContract.FavlistEntry.COLUMN_MOVIE_NAME);
-                mLoadingIndicator.setVisibility(View.INVISIBLE);
                 mAdapter = new Adapter(cursor.getCount(),width,cursor,MainActivity.this,calculateNoOfColumns(getApplicationContext()));
                 mNumbersList.setAdapter(mAdapter);
                 Context context = MainActivity.this;
@@ -219,7 +221,6 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
             try {
                 SearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
                 json= new JSONObject(SearchResults);
-                //System.out.println(json.get("page"));
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {

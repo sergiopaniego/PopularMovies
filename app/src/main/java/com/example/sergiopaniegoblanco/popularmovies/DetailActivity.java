@@ -33,6 +33,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URL;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -48,23 +51,24 @@ public class DetailActivity extends AppCompatActivity {
     private String image="";
     private String text;
 
+    @BindView(R.id.title) TextView title;
+    @BindView(R.id.rating) TextView ratingText;
+    @BindView(R.id.release_date) TextView releaseText;
+    @BindView(R.id.plot) TextView plotText;
+    @BindView(R.id.review) TextView reviewText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-
-        ImageView imageDetail=(ImageView) findViewById(R.id.detailimage);
+        ButterKnife.bind(this);
+        ImageView imageDetail= ButterKnife.findById(this, R.id.detailimage);
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         screenWidth = size.x;
         Intent intent=getIntent();
         JSONObject json;
-        TextView title=(TextView) findViewById(R.id.title);
-        TextView ratingText=(TextView) findViewById(R.id.rating);
-        TextView releaseText=(TextView) findViewById(R.id.release_date);
-        TextView plotText=(TextView) findViewById(R.id.plot);
         URL url;
         URL url2;
 
@@ -83,9 +87,11 @@ public class DetailActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        Uri builtUri = Uri.parse(URL_BASE).buildUpon().appendPath(id).appendPath("videos").appendQueryParameter(PARAM_QUERY,getString(R.string.api_key))
+        Uri builtUri = Uri.parse(URL_BASE).buildUpon().appendPath(id).appendPath("videos")
+                .appendQueryParameter(PARAM_QUERY,getString(R.string.api_key))
                 .build();
-        Uri builtUri2 = Uri.parse(URL_BASE).buildUpon().appendPath(id).appendPath("reviews").appendQueryParameter(PARAM_QUERY,getString(R.string.api_key))
+        Uri builtUri2 = Uri.parse(URL_BASE).buildUpon().appendPath(id).appendPath("reviews")
+                .appendQueryParameter(PARAM_QUERY,getString(R.string.api_key))
                 .build();
 
         if(!isOnline()){
@@ -109,7 +115,6 @@ public class DetailActivity extends AppCompatActivity {
             }
         }
         Picasso.with(DetailActivity.this).load(getString(R.string.image_db)+image).error(R.drawable.fff).resize(screenWidth/2, 0).into(imageDetail);
-        //Action bar show film name
         setTitle(null);
     }
     public boolean isOnline() {
@@ -174,26 +179,24 @@ public class DetailActivity extends AppCompatActivity {
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
-
             }
             return SearchResults1;
         }
 
         @Override
         protected void onPostExecute(String SearchResults) {
-            TextView text=(TextView) findViewById(R.id.review);
             JSONArray jArray;
             try {
                 int number=Integer.parseInt(jsonReview.get("total_results").toString());
                 jArray = jsonReview.getJSONArray("results");
                 for(int i=0;i<number;i++){
                     String review = jArray.getJSONObject(i).get("content").toString();
-                    text.append(" Review "+String.valueOf(i+1)+":\n");
-                    text.append(review);
-                    text.append("\n\n");
+                    reviewText.append(" Review "+String.valueOf(i+1)+":\n");
+                    reviewText.append(review);
+                    reviewText.append("\n\n");
                 }
                 if(Integer.parseInt(jsonReview.get("total_results").toString())==0){
-                    text.append(getString(R.string.no_reviews));
+                    reviewText.append(getString(R.string.no_reviews));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -218,7 +221,6 @@ public class DetailActivity extends AppCompatActivity {
                 ImageButton trailerImage=(ImageButton)findViewById(R.id.trailerImage1);
                 Picasso.with(DetailActivity.this).load(URL_BASE_YOUTUBE+videoKey1+"/0.jpg").error(R.drawable.fff).resize(screenWidth/2, 0).into(trailerImage);
             }
-
         }
     }
 
@@ -259,18 +261,10 @@ public class DetailActivity extends AppCompatActivity {
                 cv.put(FavListContract.FavlistEntry.COLUMN_MOVIE_NAME,movieName);
                 cv.put(FavListContract.FavlistEntry.COLUMN_MOVIE_POSTER,getString(R.string.image_db)+image);
                 cv.put(FavListContract.FavlistEntry.COLUMN_MOVIE_JSON,text);
-                Uri uri = getContentResolver().insert(FavListContract.FavlistEntry.CONTENT_URI, cv);
-
-                // Display the URI that's returned with a Toast
-                // [Hint] Don't forget to call finish() to return to MainActivity after this insert is complete
-                if(uri != null) {
-                    Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
-                }
                 item.setIcon(R.drawable.ic_favorite_white_24dp);
                 fav=true;
             }
         }
-
         return super.onOptionsItemSelected(item);
     }
 
