@@ -52,8 +52,11 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
     private Cursor cursor;
     private Menu menu;
     private String previuosMenuOption;
+    private GridLayoutManager gd;
+    private int currentScrollPosition;
 
     private static final String MENU_TEXT_KEY = "menu";
+    private static final String CURRENT_SCROLL_POSITION = "scroll_position";
 
     @BindView(R.id.recycledview) RecyclerView mNumbersList;
     @BindView(R.id.pb_loading_indicator) ProgressBar mLoadingIndicator;
@@ -76,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
         }else{
-            GridLayoutManager gd = new GridLayoutManager(getApplicationContext(), calculateNoOfColumns(getApplicationContext()));
+            gd = new GridLayoutManager(getApplicationContext(), calculateNoOfColumns(getApplicationContext()));
             mNumbersList.setLayoutManager(gd);
             Display display = getWindowManager().getDefaultDisplay();
             Point size = new Point();
@@ -85,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
             //images = ButterKnife.findById(this, R.id.poster_item);
             mNumbersList.setHasFixedSize(true);
             if (savedInstanceState != null) {
+                currentScrollPosition = savedInstanceState.getInt(CURRENT_SCROLL_POSITION, 0);
                 if (savedInstanceState.containsKey(MENU_TEXT_KEY)) {
                     previuosMenuOption = savedInstanceState.getString(MENU_TEXT_KEY);
                     System.out.println(previuosMenuOption);
@@ -194,6 +198,8 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             mAdapter = new Adapter(NUM_LIST_ITEMS,width,json,MainActivity.this,calculateNoOfColumns(getApplicationContext()));
             mNumbersList.setAdapter(mAdapter);
+            System.out.println(currentScrollPosition);
+            mNumbersList.smoothScrollToPosition(currentScrollPosition);
         }
     }
     public static int calculateNoOfColumns(Context context) {
@@ -207,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(MENU_TEXT_KEY, menuOptionSelected);
+        outState.putInt(CURRENT_SCROLL_POSITION, gd.findFirstVisibleItemPosition());
     }
 
     public void menuTopRated(@Nullable MenuItem item){
@@ -236,6 +243,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.ListItemC
                 item.setTitle(getString(R.string.fav));
             }
             fav=false;
+
         }
     }
 
